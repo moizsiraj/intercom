@@ -30,20 +30,30 @@ public class IntercomPlugin extends Plugin {
 
     @Override
     public void load() {
+        Boolean loadOnStart = GetLoadOnStartKey();
+
+        if(!loadOnStart)
+          return;
+
         // Set up Intercom
         setUpIntercom();
 
         // load parent
         super.load();
     }
-    
+
+    private Boolean GetLoadOnStartKey(){
+      CapConfig config = this.bridge.getConfig();
+      return config.getPluginConfiguration("Intercom").getBoolean("loadOnStart", true);
+    }
+
     @PluginMethod()
     public void loadWithKeys(PluginCall call) {
         String appId = call.getString("appId", "NO_APP_ID_PASSED");
         String apiKey = call.getString("apiKeyAndroid", "NO_API_KEY_PASSED");
 
         Intercom.initialize(this.getActivity().getApplication(), apiKey, appId);
-     
+
         // load parent
         super.load();
     }
@@ -51,6 +61,12 @@ public class IntercomPlugin extends Plugin {
     @Override
     public void handleOnStart() {
         super.handleOnStart();
+
+        Boolean loadOnStart = GetLoadOnStartKey();
+
+       if(!loadOnStart)
+          return;
+
         bridge.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -240,11 +256,15 @@ public class IntercomPlugin extends Plugin {
 
     private void setUpIntercom() {
         try {
+            Boolean loadOnStart = GetLoadOnStartKey();
+
+            if(!loadOnStart)
+                return;
+
             // get config
             CapConfig config = this.bridge.getConfig();
             String apiKey = config.getPluginConfiguration("Intercom").getString("androidApiKey");
             String appId = config.getPluginConfiguration("Intercom").getString("androidAppId");
-
             // init intercom sdk
             Intercom.initialize(this.getActivity().getApplication(), apiKey, appId);
         } catch (Exception e) {
