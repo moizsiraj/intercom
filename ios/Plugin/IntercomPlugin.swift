@@ -9,6 +9,10 @@ import Intercom
 @objc(IntercomPlugin)
 public class IntercomPlugin: CAPPlugin {
     public override func load() {
+        let loadOnStart = getConfig().getBoolean("loadOnStart", true)
+        if(!loadOnStart){
+            return
+        }
         let apiKey = getConfig().getString("iosApiKey") ?? "ADD_IN_CAPACITOR_CONFIG_JSON"
         let appId = getConfig().getString("iosAppId") ?? "ADD_IN_CAPACITOR_CONFIG_JSON"
         Intercom.setApiKey(apiKey, forAppId: appId)
